@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SalesTrack</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,sans-serif;background:#f3f4f6;color:#111}
+.wrap{max-width:520px;margin:0 auto;padding:16px}
+.card{background:#fff;border-radius:12px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px #0002}
+h1,h2,h3{margin:0 0 12px}
+input,select,button{width:100%;padding:12px;margin-bottom:10px;border:1px solid #ccc;border-radius:8px;font-size:16px}
+button{background:#2563eb;color:#fff;border:0;font-weight:600;cursor:pointer}
+button.grey{background:#6b7280}
+.err{color:#dc2626;min-height:20px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid #eee}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;background:#e0e7ff}
+.hide{display:none}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">Loading...</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc, getDocs, collection, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ====== PASTE YOUR FIREBASE CONFIG HERE ======
+const firebaseConfig = {
+  apiKey: "AIzaSyDFKjG4G91HOPU1f_lri3GySaEJhHcGays",
+  authDomain: "salestrack-4ea83.firebaseapp.com",
+  projectId: "salestrack-4ea83",
+  storageBucket: "salestrack-4ea83.firebasestorage.app",
+  messagingSenderId: "1086042903250",
+  appId: "1:1086042903250:web:7499a5b21288064052d30b"
+};
+// =============================================
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const $ = s => document.querySelector(s);
+const root = $("#app");
+const toEmail = u => u.trim().toLowerCase() + "@salesapp.app";
+
+function render(html){ root.innerHTML = html; }
+
+async function setupDone(){
+  try { return (await getDoc(doc(db,"settings","setup"))).exists(); } catch(e){ return false; }
+}
+
+function loginView(showSetup){
+  render(`
+  <div class="card"><h1>SalesTrack</h1>
+    <input id="u" placeholder="Username" autocapitalize="none">
+    <input id="p" type="password" placeholder="Password">
+    <div class="err" id="e"></div>
+    <button id="go">Login</button>
+    ${showSetup ? '<button class="grey" id="setup">First time? Create Boss account</button>' : ''}
+  </div>`);
+  $("#go").onclick = async () => {
+    try { await signInWithEmailAndPassword(auth, toEmail($("#u").value), $("#p").value); }
+    catch(e){ $("#e").textContent = "Wrong username or password"; }
+  };
+  if (showSetup) $("#setup").onclick = setupView;
+}
+
+function setupView(){
+  render(`
+  <div class="card"><h2>Create Boss account</h2>
+    <input id="n" placeholder="Your name">
+    <input id="u" placeholder="Username" autocapitalize="none">
+    <input id="p" type="password" placeholder="Password (min 6)">
+    <div class="err" id="e"></div>
+    <button id="go">Create</button>
+    <button class="grey" id="back">Back</button>
+  </div>`);
+  $("#back").onclick = () => loginView(true);
+  $("#go").onclick = async () => {
+    try {
+      const u = $("#u").value.trim().toLowerCase();
+      const cred = await createUserWithEmailAndPassword(auth, toEmail(u), $("#p").value);
+      const b = writeBatch(db);
+      b.set(doc(db,"users",cred.user.uid), { name:$("#n").value.trim(), username:u, role:"boss", createdAt:serverTimestamp() });
+      b.set(doc(db,"settings","setup"), { done:true });
+      await b.commit();
+      location.reload();
+    } catch(e){ $("#e").textContent = e.message; }
+  };
+}
+
+async function bossView(me){
+  render(`
+  <div class="card"><h2>Boss: ${me.name}</h2><button class="grey" id="out">Logout</button></div>
+  <div class="card"><h3>Add account</h3>
+    <select id="r"><option value="salesman">Salesman</option><option value="manager">Manager</option></select>
+    <input id="n" placeholder="Full name">
+    <input id="u" placeholder="Username" autocapitalize="none">
+    <input id="p" type="text" placeholder="Password (min 6)">
+    <div class="err" id="e"></div>
+    <button id="add">Create account</button>
+  </div>
+  <div class="card"><h3>Team</h3><div id="list">Loading...</div></div>`);
+  $("#out").onclick = () => signOut(auth);
+  $("#add").onclick = async () => {
+    const u = $("#u").value.trim().toLowerCase(), p = $("#p").value, n = $("#n").value.trim();
+    if(!u||!n||p.length<6){ $("#e").textContent="Fill all fields, password min 6"; return; }
+    try {
+      // secondary app so the boss stays logged in
+      const sec = initializeApp(firebaseConfig, "sec" + Date.now());
+      const secAuth = getAuth(sec);
+      const cred = await createUserWithEmailAndPassword(secAuth, toEmail(u), p);
+      await setDoc(doc(db,"users",cred.user.uid), { name:n, username:u, role:$("#r").value, createdAt:serverTimestamp() });
+      await signOut(secAuth);
+      $("#e").textContent = ""; ["#n","#u","#p"].forEach(x=>$(x).value="");
+      loadList();
+    } catch(e){ $("#e").textContent = e.code === "auth/email-already-in-use" ? "Username already taken" : e.message; }
+  };
+  async function loadList(){
+    const snap = await getDocs(collection(db,"users"));
+    const rows = [];
+    snap.forEach(d => { const x = d.data(); if (x.role !== "boss") rows.push(`<div class="row"><span>${x.name} (${x.username})</span><span class="tag">${x.role}</span></div>`); });
+    $("#list").innerHTML = rows.join("") || "No accounts yet";
+  }
+  loadList();
+}
+
+function simpleView(me){
+  render(`
+  <div class="card"><h2>${me.role === "manager" ? "Manager" : "Salesman"}: ${me.name}</h2>
+    <p>Login works. Next steps will add the ${me.role === "manager" ? "reports view" : "visit log and online toggle"} here.</p>
+    <button class="grey" id="out">Logout</button></div>`);
+  $("#out").onclick = () => signOut(auth);
+}
+
+onAuthStateChanged(auth, async user => {
+  if (!user) { loginView(!(await setupDone())); return; }
+  const snap = await getDoc(doc(db,"users",user.uid));
+  if (!snap.exists()) { render('<div class="card">Account not set up. <button id="out">Logout</button></div>'); $("#out").onclick=()=>signOut(auth); return; }
+  const me = snap.data();
+  me.role === "boss" ? bossView(me) : simpleView(me);
+});
+</script>
+</body>
+</html>
