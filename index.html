@@ -98,8 +98,8 @@ const firebaseConfig = {
   messagingSenderId: "1086042903250",
   appId: "1:1086042903250:web:7499a5b21288064052d30b"
 };
-const WORKER_URL = "PASTE_WORKER_URL";
-const VAPID_KEY = "PASTE_VAPID_KEY";
+const WORKER_URL = "https://salestrack.ayushupadhyay4446.workers.dev/";
+const VAPID_KEY = "BAlZC7HTv3gC_YP99VeWQhl8VVEIPOYoLyqI7R9tt43U9tDawu7b529Cg2hBDUKUVXfuvoRPyH0z_aUB8Mn2O5c";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = initializeFirestore(app, { experimentalForceLongPolling: true, localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
