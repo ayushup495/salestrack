@@ -1,4 +1,4 @@
-const V = "salestrack-v2";
+const V = "salestrack-v3";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(V).then(c => c.addAll(SHELL))); self.skipWaiting(); });
 self.addEventListener("activate", e => {
@@ -15,4 +15,13 @@ self.addEventListener("fetch", e => {
     fetch(r).then(res => { const c = res.clone(); caches.open(V).then(x => x.put(r, c)); return res; })
       .catch(() => caches.match(r).then(m => m || caches.match("./index.html")))
   );
+});
+self.addEventListener("push", e => {
+  let d = {};
+  try { const p = e.data.json(); d = p.data || p.notification || p; } catch (x) {}
+  e.waitUntil(self.registration.showNotification(d.title || "SalesTrack", { body: d.body || "", icon: "icon-192.png", badge: "icon-192.png" }));
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: "window", includeUncontrolled: true }).then(l => l.length ? l[0].focus() : clients.openWindow("./")));
 });
