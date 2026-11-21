@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#4f46e5">
+<title>SalesTrack</title>
+<style>
+:root{--p:#4f46e5;--p2:#7c3aed;--bg:#f5f6fb;--card:#fff;--tx:#1e1b4b;--mu:#6b7280;--ln:#e5e7eb;--inp:#fff;--soft:#eef2ff;--ok:#16a34a;--bad:#dc2626;--sh:#4f46e51a}
+[data-theme=dark]{--bg:#0e0f1f;--card:#1a1b33;--tx:#eceefe;--mu:#9aa0c3;--ln:#2b2d50;--inp:#12132a;--soft:#262850;--sh:#0006}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--tx)}
+.wrap{max-width:600px;margin:0 auto;padding:0 16px 100px}
+.top{background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;margin:0 -16px 16px;padding:calc(env(safe-area-inset-top,0px) + 18px) 18px 26px;border-radius:0 0 26px 26px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.co{font-size:19px;font-weight:800}.who{opacity:.85;font-size:13px;margin-top:2px;text-transform:capitalize}
+.hb{display:flex;gap:6px}
+.ghost{background:#ffffff30;color:#fff;border:0;border-radius:10px;padding:9px 12px;font-weight:600;cursor:pointer;font-size:14px}
+.thf{position:fixed;top:12px;right:12px;z-index:5;background:var(--p)}
+.card{background:var(--card);border-radius:18px;padding:16px;margin-bottom:14px;box-shadow:0 2px 12px var(--sh)}
+.tap{cursor:pointer}
+h1{margin:0;font-size:28px}h3{margin:0 0 10px;font-size:17px}
+label{display:block;font-size:13px;font-weight:600;color:var(--mu);margin:0 0 5px}
+input,select,textarea{width:100%;padding:12px 14px;margin-bottom:12px;border:1.5px solid var(--ln);border-radius:12px;font-size:16px;background:var(--inp);color:var(--tx);outline:none;font-family:inherit}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus{border-color:var(--p)}
+.btn{width:100%;padding:14px;border:0;border-radius:12px;font-size:16px;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--p),var(--p2));cursor:pointer;margin-bottom:10px}
+.btn.alt{background:var(--soft);color:var(--p)}.btn.danger{background:#fee2e2;color:var(--bad)}.btn.green{background:linear-gradient(135deg,#16a34a,#22c55e)}
+.btn.sm{width:auto;padding:9px 14px;font-size:14px;margin:0}
+.err{color:var(--bad);font-size:14px;min-height:18px;margin-bottom:8px}
+.chk{font-size:13px;margin:-8px 0 10px;min-height:16px}.ok{color:var(--ok)}.no{color:var(--bad)}
+.auth{padding-top:calc(env(safe-area-inset-top,0px) + 44px);text-align:center}
+.auth .card{text-align:left;margin-top:22px}
+.logo{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--p),var(--p2));display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 14px}
+.sub{color:var(--mu);margin:4px 0 0;font-size:14px}
+.link{color:var(--mu);margin-top:16px}.link a{color:var(--p);font-weight:700;cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border-radius:16px;padding:12px;box-shadow:0 2px 12px var(--sh)}
+.stat b{display:block;font-size:20px}.stat span{color:var(--mu);font-size:12px}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.head h3{margin:0}
+.r0{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln);cursor:pointer}.row:last-child{border:0}
+.ava{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex:none}
+.inf{flex:1;min-width:0}.inf b{display:block}.inf small{color:var(--mu)}
+.tag{font-size:12px;padding:3px 10px;border-radius:99px;background:var(--soft);color:var(--p);font-weight:600;text-transform:capitalize;white-space:nowrap}
+.tag.off{background:#fee2e2;color:var(--bad)}
+.bar{height:10px;border-radius:99px;background:var(--soft);overflow:hidden;margin:8px 0 6px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--p),var(--p2));border-radius:99px}
+.pl{display:flex;justify-content:space-between;font-size:14px}
+small,.mu{color:var(--mu)}
+.empty{color:var(--mu);text-align:center;padding:18px 0}
+.vc{border-top:1px solid var(--ln);padding:12px 0;font-size:14px;line-height:1.5}.vc:first-of-type{border:0}
+.vh{display:flex;justify-content:space-between;gap:8px}.vh span{color:var(--mu);font-size:12px;white-space:nowrap}
+.vc img{max-width:120px;border-radius:10px;margin-top:6px;display:block}
+.ov{position:fixed;inset:0;background:#0008;display:flex;align-items:flex-end;justify-content:center;z-index:50}
+.md{background:var(--card);width:100%;max-width:600px;border-radius:24px 24px 0 0;padding:20px 16px calc(env(safe-area-inset-bottom,0px) + 22px);max-height:92vh;overflow:auto}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111827;color:#fff;padding:12px 20px;border-radius:99px;z-index:99;font-size:14px;max-width:90%}
+.nav{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--ln);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:10}
+.nav button{flex:1;border:0;background:none;color:var(--mu);padding:10px 0;font-size:20px;cursor:pointer}.nav button small{display:block;font-size:11px}.nav button.on{color:var(--p)}
+@media print{.nav,.ghost,.btn{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager, doc, getDoc, setDoc, addDoc, updateDoc, collection, query, where, onSnapshot, writeBatch, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDFKjG4G91HOPU1f_lri3GySaEJhHcGays",
+  authDomain: "salestrack-4ea83.firebaseapp.com",
+  projectId: "salestrack-4ea83",
+  storageBucket: "salestrack-4ea83.firebasestorage.app",
+  messagingSenderId: "1086042903250",
+  appId: "1:1086042903250:web:7499a5b21288064052d30b"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = initializeFirestore(app, { experimentalForceLongPolling: true, localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }) });
+
+/* ---------- helpers ---------- */
+const $ = s => document.querySelector(s), $$ = s => document.querySelectorAll(s);
+const root = $("#app");
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const rnd = () => Math.random().toString(36).slice(2, 8);
+const okCode = /^[a-z0-9]{3,20}$/, okUser = /^[a-z0-9_]{3,20}$/;
+const money = n => "₹" + Math.round(+n || 0).toLocaleString("en-IN");
+const ymd = d => new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10);
+const hhmm = ms => new Date(ms).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" });
+const ms = x => x?.toMillis?.() || Date.now();
+const IDLE = 4 * 3600e3;
+function range(p){
+  const d = new Date();
+  if (p === "day") return [ymd(d), ymd(d)];
+  if (p === "week"){ const a = new Date(d); a.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const b = new Date(a); b.setDate(a.getDate() + 6); return [ymd(a), ymd(b)]; }
+  return [ymd(new Date(d.getFullYear(), d.getMonth(), 1)), ymd(new Date(d.getFullYear(), d.getMonth() + 1, 0))];
+}
+let me = null, company = null, busy = false, flash = "", tab = "home", unsubs = [];
+const D = { users: [], status: {}, visits: [], targets: {}, acts: [], myTarget: null, myStatus: null };
+
+/* theme */
+const getTheme = () => { try { return localStorage.getItem("th") || "light"; } catch(e){ return "light"; } };
+function setTheme(t){ document.documentElement.dataset.theme = t; try { localStorage.setItem("th", t); } catch(e){} $$("[data-th]").forEach(b => b.textContent = t === "dark" ? "☀️" : "🌙"); }
+function wireTheme(){ $$("[data-th]").forEach(b => b.onclick = () => setTheme(getTheme() === "dark" ? "light" : "dark")); setTheme(getTheme()); }
+const render = h => { root.innerHTML = h; wireTheme(); };
+
+function toast(m){ const t = document.createElement("div"); t.className = "toast"; t.textContent = m; document.body.appendChild(t); setTimeout(() => t.remove(), 3000); }
+function modal(h){ const o = document.createElement("div"); o.className = "ov"; o.innerHTML = `<div class="md">${h}</div>`; o.onclick = e => { if (e.target === o) o.remove(); }; document.body.appendChild(o); return o; }
+function notify(t){ toast(t); try { if ("Notification" in window && Notification.permission === "granted") new Notification("SalesTrack", { body: t }); } catch(e){} }
+document.addEventListener("click", () => { try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch(e){} }, { once: true });
+
+function checker(inp, out, fn){
+  let t;
+  inp.addEventListener("input", () => {
+    clearTimeout(t); out.textContent = ""; const v = inp.value.trim().toLowerCase(); if (!v) return;
+    t = setTimeout(async () => {
+      const r = await fn(v);
+      if (r === null) { out.textContent = "Use 3-20 letters/numbers" + (fn.u ? " or _" : ""); out.className = "chk no"; return; }
+      out.textContent = r ? "✓ Available" : "✗ Already taken"; out.className = "chk " + (r ? "ok" : "no");
+    }, 450);
+  });
+}
+async function newAuthUser(email, pw){
+  const sec = initializeApp(firebaseConfig, "s" + Date.now() + rnd());
+  const sa = getAuth(sec);
+  const cr = await createUserWithEmailAndPassword(sa, email, pw);
+  await signOut(sa);
+  return cr.user.uid;
+}
+function shrink(file){
+  return new Promise(res => {
+    const r = new FileReader();
+    r.onload = () => { const i = new Image(); i.onload = () => { const k = Math.min(1, 700 / Math.max(i.width, i.height)); const c = document.createElement("canvas"); c.width = i.width * k; c.height = i.height * k; c.getContext("2d").drawImage(i, 0, 0, c.width, c.height); res(c.toDataURL("image/jpeg", .6)); }; i.src = r.result; };
+    r.readAsDataURL(file);
+  });
+}
+function csv(rows){
+  const h = ["Salesman","Date","Time","Place","Customer","Product","Order amount","Expense","Rating","Meeting","Experience","Follow-up"];
+  const q = s => '"' + String(s ?? "").replace(/"/g, '""') + '"';
+  const lines = [h.map(q).join(",")].concat(rows.map(v => [v.staffName, v.date, v.time, v.place, v.customer, v.product, v.amount, v.expense, v.rating, v.meeting, v.experience, v.followUp].map(q).join(",")));
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv" })); a.download = "visits.csv"; a.click();
+}
+const sortV = (a, b) => (b.date + b.time).localeCompare(a.date + a.time);
+function prog(sid, t){
+  if (!t) return null;
+  const sold = D.visits.filter(v => v.staffId === sid && v.date >= t.start && v.date <= t.end).reduce((a, v) => a + (+v.amount || 0), 0);
+  return { sold, left: Math.max(0, t.amount - sold), pct: t.amount ? Math.min(100, Math.round(sold / t.amount * 100)) : 0 };
+}
+const bar = p => `<div class="bar"><i style="width:${p}%"></i></div>`;
+const act = (type, text, staffId) => addDoc(collection(db, "activity"), { companyId: me.companyId, staffId: staffId || me.staffId, type, text, createdAt: serverTimestamp() }).catch(() => {});
+function vcard(v, showName){
+  return `<div class="vc"><div class="vh"><b>${showName ? esc(v.staffName) + " · " : ""}${esc(v.place)}</b><span>${esc(v.date)} ${esc(v.time)}</span></div>
+  ${v.customer ? `<div>👤 ${esc(v.customer)} ${v.rating ? "· " + "★".repeat(v.rating) : ""}</div>` : ""}
+  ${+v.amount ? `<div>💰 ${money(v.amount)}${v.product ? " · " + esc(v.product) : ""}</div>` : (v.product ? `<div>📦 ${esc(v.product)}</div>` : "")}
+  ${v.meeting ? `<div class="mu">📝 ${esc(v.meeting)}</div>` : ""}
+  ${v.experience ? `<div class="mu">💬 ${esc(v.experience)}</div>` : ""}
+  ${+v.expense ? `<div class="mu">🚗 Expense ${money(v.expense)}</div>` : ""}
+  ${v.followUp ? `<div class="mu">⏰ Follow-up ${esc(v.followUp)}</div>` : ""}
+  ${v.photo ? `<img src="${v.photo}" alt="">` : ""}</div>`;
+}
+
+/* ---------- LOGIN ---------- */
+function loginView(){
+  render(`<button class="ghost thf" data-th></button><div class="auth"><div class="logo">📈</div><h1>SalesTrack</h1><p class="sub">Field sales tracking for your team</p>
+  <div class="card">
+    <label>Company code</label><input id="c" placeholder="e.g. glassco" autocapitalize="none" autocomplete="off">
+    <label>Username</label><input id="u" placeholder="Username" autocapitalize="none" autocomplete="off">
+    <label>Password</label><input id="p" type="password" placeholder="Password">
+    <div class="err" id="e">${esc(flash)}</div>
+    <button class="btn" id="go">Login</button>
+  </div><p class="link">New company? <a id="new">Create account</a></p></div>`);
+  flash = "";
+  $("#new").onclick = signupView;
+  $("#go").onclick = async () => {
+    const c = $("#c").value.trim().toLowerCase(), u = $("#u").value.trim().toLowerCase(), p = $("#p").value;
+    if (!c || !u || !p) { $("#e").textContent = "Fill all fields"; return; }
+    $("#go").textContent = "Logging in...";
+    try {
+      const l = await getDoc(doc(db, "logins", c + "__" + u));
+      if (!l.exists()) throw 0;
+      await signInWithEmailAndPassword(auth, l.data().email, p);
+    } catch(e){ $("#e").textContent = "Wrong company code, username or password"; $("#go").textContent = "Login"; }
+  };
+}
+
+/* ---------- SIGNUP ---------- */
+function signupView(){
+  render(`<button class="ghost thf" data-th></button><div class="auth"><div class="logo">🏢</div><h1>Create company</h1><p class="sub">You become the Boss of this company</p>
+  <div class="card">
+    <label>Company name</label><input id="cn" placeholder="e.g. Glass Works Pvt Ltd">
+    <label>Company code (your team types this to login)</label><input id="cc" placeholder="e.g. glassco" autocapitalize="none"><div class="chk" id="cchk"></div>
+    <label>Your name</label><input id="n" placeholder="Your name">
+    <label>Your username</label><input id="u" placeholder="Letters, numbers, _" autocapitalize="none">
+    <label>Your WhatsApp number with country code (optional)</label><input id="wa" type="tel" placeholder="919876543210">
+    <label>Password</label><input id="p" type="password" placeholder="Min 6 characters">
+    <div class="err" id="e"></div>
+    <button class="btn" id="go">Create company</button>
+    <button class="btn alt" id="back">Back to login</button>
+  </div></div>`);
+  $("#back").onclick = loginView;
+  checker($("#cc"), $("#cchk"), async v => okCode.test(v) ? !(await getDoc(doc(db, "companies", v))).exists() : null);
+  $("#go").onclick = async () => {
+    const cn = $("#cn").value.trim(), code = $("#cc").value.trim().toLowerCase(), name = $("#n").value.trim(), u = $("#u").value.trim().toLowerCase(), p = $("#p").value, wa = $("#wa").value.replace(/\D/g, "");
+    if (!cn || !name) { $("#e").textContent = "Fill all fields"; return; }
+    if (!okCode.test(code)) { $("#e").textContent = "Company code: 3-20 letters/numbers only"; return; }
+    if (!okUser.test(u)) { $("#e").textContent = "Username: 3-20 letters, numbers or _"; return; }
+    if (p.length < 6) { $("#e").textContent = "Password min 6 characters"; return; }
+    $("#go").textContent = "Creating..."; busy = true;
+    try {
+      if ((await getDoc(doc(db, "companies", code))).exists()) { $("#e").textContent = "This company code is already taken"; $("#go").textContent = "Create company"; busy = false; return; }
+      const email = `${code}.${u}.${rnd()}@salesapp.app`;
+      const cr = await createUserWithEmailAndPassword(auth, email, p);
+      const uid = cr.user.uid;
+      try {
+        const b = writeBatch(db);
+        b.set(doc(db, "companies", code), { name: cn, code, ownerUid: uid, bossPhone: wa, createdAt: serverTimestamp() });
+        b.set(doc(db, "users", uid), { name, username: u, role: "boss", companyId: code, staffId: uid, active: true, createdAt: serverTimestamp() });
+        b.set(doc(db, "logins", code + "__" + u), { companyId: code, email, uid });
+        await b.commit();
+      } catch(e2){ busy = false; flash = "Could not create company. Publish the new Firestore rules."; await signOut(auth); return; }
+      busy = false; route(auth.currentUser);
+    } catch(e){ busy = false; $("#e").textContent = e.message; $("#go").textContent = "Create company"; }
+  };
+}
+
+/* ---------- ROUTER ---------- */
+function stopAll(){ unsubs.forEach(f => f()); unsubs = []; Object.assign(D, { users: [], status: {}, visits: [], targets: {}, acts: [], myTarget: null, myStatus: null }); }
+async function route(u){
+  stopAll();
+  if (!u) { me = null; loginView(); return; }
+  const s = await getDoc(doc(db, "users", u.uid));
+  if (!s.exists() || s.data().active === false) { flash = s.exists() ? "Your account is disabled. Contact your boss." : "Account not found."; await signOut(auth); return; }
+  me = s.data();
+  company = (await getDoc(doc(db, "companies", me.companyId))).data();
+  tab = "home";
+  me.role === "salesman" ? startSales() : startMgmt();
+  draw();
+}
+onAuthStateChanged(auth, u => { if (!busy) route(u); });
+
+function startMgmt(){
+  const c = where("companyId", "==", me.companyId), L = (n, fn) => unsubs.push(onSnapshot(query(collection(db, n), c), fn, e => console.log(e)));
+  L("users", s => { D.users = s.docs.map(d => ({ id: d.id, ...d.data() })).filter(u => u.role !== "boss"); draw(); });
+  L("status", s => { D.status = {}; s.forEach(d => D.status[d.id] = d.data()); draw(); });
+  L("visits", s => { D.visits = s.docs.map(d => ({ id: d.id, ...d.data() })); draw(); });
+  L("targets", s => { D.targets = {}; s.forEach(d => D.targets[d.id] = d.data()); draw(); });
+  let init = true;
+  L("activity", s => {
+    D.acts = s.docs.map(d => d.data()).sort((a, b) => ms(b.createdAt) - ms(a.createdAt));
+    if (!init) s.docChanges().forEach(ch => { if (ch.type === "added" && !ch.doc.metadata.hasPendingWrites && ch.doc.data().type !== "tgtset") notify(ch.doc.data().text); });
+    init = false; draw();
+  });
+}
+function startSales(){
+  const c = where("companyId", "==", me.companyId), m = where("staffId", "==", me.staffId);
+  unsubs.push(onSnapshot(query(collection(db, "visits"), c, m), s => { D.visits = s.docs.map(d => ({ id: d.id, ...d.data() })); draw(); }));
+  unsubs.push(onSnapshot(query(collection(db, "targets"), c, m), s => { D.myTarget = s.empty ? null : s.docs[0].data(); draw(); }));
+  unsubs.push(onSnapshot(query(collection(db, "status"), c, m), s => { D.myStatus = s.empty ? null : s.docs[0].data(); draw(); }));
+}
+
+const head = () => `<div class="top"><div><div class="co">${esc(company.name)}</div><div class="who">${esc(me.name)} · ${esc(me.role)}</div></div><div class="hb"><button class="ghost" data-th></button><button class="ghost" id="out">Logout</button></div></div>`;
+function draw(){ if (!me || !company) return; me.role === "salesman" ? drawSales() : drawMgmt(); }
+
+/* ---------- BOSS / MANAGER ---------- */
+function drawMgmt(){
+  const boss = me.role === "boss";
+  const tabs = [["home", "🏠", "Home"], ["team", "👥", "Team"], ["act", "🔔", "Activity"]].concat(boss ? [["set", "⚙️", "Settings"]] : []);
+  const body = tab === "home" ? homeHtml() : tab === "team" ? teamHtml(boss) : tab === "act" ? actHtml() : setHtml();
+  render(head() + body + `<div class="nav">${tabs.map(t => `<button data-t="${t[0]}" class="${tab === t[0] ? "on" : ""}">${t[1]}<small>${t[2]}</small></button>`).join("")}</div>`);
+  $("#out").onclick = () => signOut(auth);
+  $$("[data-t]").forEach(b => b.onclick = () => { tab = b.dataset.t; drawMgmt(); scrollTo(0, 0); });
+  $$("[data-u]").forEach(el => el.onclick = () => openUser(el.dataset.u));
+  $$("[data-e]").forEach(el => el.onclick = () => editModal(D.users.find(x => x.id === el.dataset.e)));
+  if ($("#add")) $("#add").onclick = addModal;
+  if ($("#savewa")) $("#savewa").onclick = async () => { const n = $("#wa").value.replace(/\D/g, ""); await updateDoc(doc(db, "companies", me.companyId), { bossPhone: n }); company.bossPhone = n; toast("Saved"); };
+  if ($("#csvall")) $("#csvall").onclick = () => csv([...D.visits].sort(sortV));
+}
+function homeHtml(){
+  const sales = D.users.filter(u => u.role === "salesman"), td = ymd(new Date()), tv = D.visits.filter(v => v.date === td);
+  const out = sales.filter(u => D.status[u.staffId]?.online).length;
+  const rows = sales.map(u => ({ u, t: D.targets[u.staffId], p: prog(u.staffId, D.targets[u.staffId]), st: D.status[u.staffId] })).sort((a, b) => (b.p?.pct || 0) - (a.p?.pct || 0));
+  const cards = rows.map((r, i) => {
+    const lastV = Math.max(0, ...D.visits.filter(v => v.staffId === r.u.staffId).map(v => ms(v.createdAt)));
+    const idle = r.st?.online && Date.now() - Math.max(ms(r.st.since), lastV) > IDLE;
+    return `<div class="card tap" data-u="${r.u.staffId}"><div class="r0"><div class="ava">${esc((r.u.name.trim()[0] || "?").toUpperCase())}</div>
+    <div class="inf"><b>#${i + 1} ${esc(r.u.name)}</b><small>${r.st?.online ? "🟢 Out · " + esc(r.st.note || "field") + " · since " + hhmm(ms(r.st.since)) : "⚪ Off duty"}</small></div>${idle ? '<span class="tag off">Idle 4h+</span>' : ""}</div>
+    ${r.p ? bar(r.p.pct) + `<div class="pl"><span>${money(r.p.sold)} of ${money(r.t.amount)}</span><b>${r.p.pct}%</b></div><small>${money(r.p.left)} left · ends ${esc(r.t.end)}</small>` : "<small>No target set</small>"}</div>`;
+  }).join("");
+  return `<div class="stats"><div class="stat"><b>${out}/${sales.length}</b><span>Out now</span></div><div class="stat"><b>${tv.length}</b><span>Visits today</span></div><div class="stat"><b>${money(tv.reduce((a, v) => a + (+v.amount || 0), 0))}</b><span>Sales today</span></div></div>
+  <h3>Salesmen (leaderboard)</h3>${cards || '<div class="card empty">No salesmen yet. Go to Team → Add.</div>'}`;
+}
+function teamHtml(boss){
+  const rows = D.users.map(t => `<div class="row" ${boss ? `data-e="${t.id}"` : (t.role === "salesman" ? `data-u="${t.staffId}"` : "")}><div class="ava">${esc((t.name.trim()[0] || "?").toUpperCase())}</div><div class="inf"><b>${esc(t.name)}</b><small>@${esc(t.username)}</small></div>${t.active === false ? '<span class="tag off">Disabled</span>' : ""}<span class="tag">${esc(t.role)}</span></div>`).join("");
+  return `<div class="card"><div class="head"><h3>Your team</h3>${boss ? '<button class="btn sm" id="add">+ Add</button>' : ""}</div>${rows || '<div class="empty">No accounts yet.</div>'}</div>`;
+}
+function actHtml(){
+  const ic = { out: "🚶", in: "🏠", visit: "📍", target: "🎯", tgtset: "📌" };
+  return `<div class="card"><h3>Activity</h3>${D.acts.slice(0, 60).map(a => `<div class="row" style="cursor:default"><div style="font-size:22px">${ic[a.type] || "🔔"}</div><div class="inf"><b style="font-weight:600">${esc(a.text)}</b><small>${new Date(ms(a.createdAt)).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</small></div></div>`).join("") || '<div class="empty">Nothing yet.</div>'}</div>`;
+}
+function setHtml(){
+  return `<div class="card"><h3>Company</h3><p class="sub">Your team logs in with company code:</p><h1 style="margin:6px 0 0">${esc(me.companyId)}</h1></div>
+  <div class="card"><h3>WhatsApp number</h3><p class="sub">Managers send target-change requests here.</p><br><input id="wa" type="tel" placeholder="919876543210" value="${esc(company.bossPhone || "")}"><button class="btn" id="savewa">Save</button></div>
+  <div class="card"><h3>Export</h3><button class="btn alt" id="csvall">Download all visits (Excel / CSV)</button></div>`;
+}
+
+function openUser(sid){
+  const u = D.users.find(x => x.staffId === sid); if (!u) return;
+  const boss = me.role === "boss", t = D.targets[sid], p = prog(sid, t), vs = D.visits.filter(v => v.staffId === sid).sort(sortV);
+  const prod = {}; vs.forEach(v => { if (v.product) prod[v.product] = (prod[v.product] || 0) + (+v.amount || 0); });
+  const exp = vs.reduce((a, v) => a + (+v.expense || 0), 0);
+  const m = modal(`<h3>${esc(u.name)} <span class="tag">${esc(u.role)}</span></h3>
+  ${p ? bar(p.pct) + `<div class="pl"><span>${money(p.sold)} of ${money(t.amount)}</span><b>${p.pct}%</b></div><small>${money(p.left)} left · ${esc(t.start)} to ${esc(t.end)}</small>` : "<p class='sub'>No target set</p>"}
+  <div style="margin:14px 0">${boss ? '<button class="btn" id="tg">Set / change target</button>' : '<button class="btn green" id="wa">Request target change on WhatsApp</button>'}
+  <button class="btn alt" id="dl">Download CSV</button><button class="btn alt" id="pr">Print / Save PDF</button></div>
+  ${Object.keys(prod).length ? "<h3>Product-wise sales</h3>" + Object.entries(prod).map(([k, v]) => `<div class="pl"><span>${esc(k)}</span><b>${money(v)}</b></div>`).join("") + "<br>" : ""}
+  ${exp ? `<p class="sub">Total travel expense: ${money(exp)}</p><br>` : ""}
+  <h3>Visits (${vs.length})</h3>${vs.map(v => vcard(v)).join("") || '<div class="empty">No visits yet.</div>'}`);
+  if (boss) m.querySelector("#tg").onclick = () => { m.remove(); targetModal(u); };
+  else m.querySelector("#wa").onclick = () => {
+    if (!company.bossPhone) { toast("Boss has not added a WhatsApp number"); return; }
+    const msg = `Hi, I want to change the target of ${u.name}.` + (t ? ` Current: ${money(t.amount)} (${t.start} to ${t.end}).` : "") + " New target: ";
+    window.open(`https://wa.me/${company.bossPhone}?text=${encodeURIComponent(msg)}`, "_blank");
+  };
+  m.querySelector("#dl").onclick = () => csv(vs);
+  m.querySelector("#pr").onclick = () => window.print();
+}
+function targetModal(u){
+  const t = D.targets[u.staffId], [s, e] = range("week");
+  const m = modal(`<h3>Target for ${esc(u.name)}</h3>
+  <label>Target amount (₹)</label><input id="a" type="number" inputmode="numeric" value="${t?.amount || ""}" placeholder="500000">
+  <label>Period</label><select id="pr"><option value="day">Daily</option><option value="week" selected>Weekly</option><option value="month">Monthly</option><option value="custom">Custom</option></select>
+  <label>Start date</label><input id="s" type="date" value="${s}"><label>End date</label><input id="e" type="date" value="${e}">
+  <div class="err" id="er"></div><button class="btn" id="ok">Save target</button>`);
+  m.querySelector("#pr").onchange = ev => { if (ev.target.value !== "custom") { const [a, b] = range(ev.target.value); m.querySelector("#s").value = a; m.querySelector("#e").value = b; } };
+  m.querySelector("#ok").onclick = async () => {
+    const amount = +m.querySelector("#a").value, start = m.querySelector("#s").value, end = m.querySelector("#e").value;
+    if (!amount || !start || !end || end < start) { m.querySelector("#er").textContent = "Enter amount and valid dates"; return; }
+    try {
+      await setDoc(doc(db, "targets", u.staffId), { companyId: me.companyId, staffId: u.staffId, amount, start, end, period: m.querySelector("#pr").value, updatedAt: serverTimestamp() });
+      act("tgtset", `Target set for ${u.name}: ${money(amount)} (${start} to ${end})`, u.staffId);
+      m.remove(); toast("Target saved");
+    } catch(err){ m.querySelector("#er").textContent = err.message; }
+  };
+}
+function addModal(){
+  const m = modal(`<h3>Add account</h3>
+  <label>Role</label><select id="r"><option value="salesman">Salesman</option><option value="manager">Manager</option></select>
+  <label>Full name</label><input id="n" placeholder="Full name">
+  <label>Username (unique in your company)</label><input id="u" placeholder="Letters, numbers, _" autocapitalize="none"><div class="chk" id="uc"></div>
+  <label>Password</label><input id="p" type="text" placeholder="Min 6 characters">
+  <div class="err" id="e"></div><button class="btn" id="ok">Create account</button>`);
+  const f = async v => okUser.test(v) ? !(await getDoc(doc(db, "logins", me.companyId + "__" + v))).exists() : null; f.u = 1;
+  checker(m.querySelector("#u"), m.querySelector("#uc"), f);
+  m.querySelector("#ok").onclick = async () => {
+    const n = m.querySelector("#n").value.trim(), u = m.querySelector("#u").value.trim().toLowerCase(), p = m.querySelector("#p").value, r = m.querySelector("#r").value, e = m.querySelector("#e"), ok = m.querySelector("#ok");
+    if (!n) { e.textContent = "Enter name"; return; }
+    if (!okUser.test(u)) { e.textContent = "Username: 3-20 letters, numbers or _"; return; }
+    if (p.length < 6) { e.textContent = "Password min 6 characters"; return; }
+    ok.textContent = "Creating...";
+    try {
+      if ((await getDoc(doc(db, "logins", me.companyId + "__" + u))).exists()) { e.textContent = "Username already used in your company"; ok.textContent = "Create account"; return; }
+      const email = `${me.companyId}.${u}.${rnd()}@salesapp.app`, uid = await newAuthUser(email, p), b = writeBatch(db);
+      b.set(doc(db, "users", uid), { name: n, username: u, role: r, companyId: me.companyId, staffId: uid, active: true, createdAt: serverTimestamp() });
+      b.set(doc(db, "logins", me.companyId + "__" + u), { companyId: me.companyId, email, uid });
+      await b.commit(); m.remove(); toast("Account created");
+    } catch(err){ e.textContent = err.message; ok.textContent = "Create account"; }
+  };
+}
+function editModal(x){
+  if (!x) return;
+  const m = modal(`<h3>Edit @${esc(x.username)}</h3>
+  <label>Full name</label><input id="n" value="${esc(x.name)}">
+  <label>Role</label><select id="r"><option value="salesman">Salesman</option><option value="manager">Manager</option></select>
+  <label>Status</label><select id="s"><option value="1">Active</option><option value="0">Disabled (cannot login)</option></select>
+  <div class="err" id="e"></div><button class="btn" id="save">Save changes</button>
+  <label style="margin-top:8px">Reset password</label><input id="np" type="text" placeholder="New password (min 6)">
+  <button class="btn alt" id="rp">Set new password</button><button class="btn danger" id="del">Delete account</button>`);
+  m.querySelector("#r").value = x.role; m.querySelector("#s").value = x.active === false ? "0" : "1";
+  const e = m.querySelector("#e");
+  m.querySelector("#save").onclick = async () => {
+    const n = m.querySelector("#n").value.trim(); if (!n) { e.textContent = "Enter name"; return; }
+    try { await updateDoc(doc(db, "users", x.id), { name: n, role: m.querySelector("#r").value, active: m.querySelector("#s").value === "1" }); m.remove(); toast("Saved"); } catch(err){ e.textContent = err.message; }
+  };
+  m.querySelector("#rp").onclick = async () => {
+    const pw = m.querySelector("#np").value; if (pw.length < 6) { e.textContent = "Password min 6 characters"; return; }
+    m.querySelector("#rp").textContent = "Updating...";
+    try {
+      const email = `${x.companyId}.${x.username}.${rnd()}@salesapp.app`, uid = await newAuthUser(email, pw), { id, ...data } = x, b = writeBatch(db);
+      b.delete(doc(db, "users", id)); b.set(doc(db, "users", uid), data); b.update(doc(db, "logins", x.companyId + "__" + x.username), { email, uid });
+      await b.commit(); m.remove(); toast("Password changed");
+    } catch(err){ e.textContent = err.message; m.querySelector("#rp").textContent = "Set new password"; }
+  };
+  m.querySelector("#del").onclick = async () => {
+    if (!confirm("Delete this account?")) return;
+    try { const b = writeBatch(db); b.delete(doc(db, "users", x.id)); b.delete(doc(db, "logins", x.companyId + "__" + x.username)); await b.commit(); m.remove(); toast("Deleted"); } catch(err){ e.textContent = err.message; }
+  };
+}
+
+/* ---------- SALESMAN ---------- */
+function drawSales(){
+  const t = D.myTarget, p = prog(me.staffId, t), st = D.myStatus, td = ymd(new Date()), vs = [...D.visits].sort(sortV);
+  const fu = vs.filter(v => v.followUp && v.followUp >= td).sort((a, b) => a.followUp.localeCompare(b.followUp)).slice(0, 5);
+  render(head() + `<div class="card">${st?.online
+    ? `<h3>🟢 You are out in the field</h3><p class="sub">${esc(st.note || "")} · since ${hhmm(ms(st.since))}</p><br><button class="btn danger" id="back">I'm back (go offline)</button>`
+    : `<h3>⚪ You are offline</h3><p class="sub">Tap when you leave for field work.</p><br><button class="btn green" id="go">Go out (online)</button>`}</div>
+  <div class="card"><h3>🎯 My target</h3>${p ? `<div class="pl"><span>${money(p.sold)} done</span><b>${p.pct}%</b></div>${bar(p.pct)}<div class="pl"><span><b>${money(p.left)}</b> left</span><small>${esc(t.start)} to ${esc(t.end)}</small></div><small>Target ${money(t.amount)}</small>` : '<p class="sub">No target set by your boss yet.</p>'}</div>
+  <button class="btn" id="addv">+ Add visit</button>
+  ${fu.length ? `<div class="card"><h3>⏰ Follow-ups</h3>${fu.map(v => `<div class="pl" style="padding:5px 0"><span>${esc(v.customer || v.place)}</span><span class="tag ${v.followUp === td ? "off" : ""}">${v.followUp === td ? "Today" : esc(v.followUp)}</span></div>`).join("")}</div>` : ""}
+  <div class="card"><h3>My visits</h3>${vs.slice(0, 30).map(v => vcard(v)).join("") || '<div class="empty">No visits yet.</div>'}</div>`);
+  $("#out").onclick = () => signOut(auth);
+  $("#addv").onclick = visitModal;
+  if ($("#go")) $("#go").onclick = goOut;
+  if ($("#back")) $("#back").onclick = () => {
+    setDoc(doc(db, "status", me.staffId), { companyId: me.companyId, staffId: me.staffId, name: me.name, online: false, note: "", since: serverTimestamp() }).catch(e => toast(e.message));
+    act("in", `${me.name} is back from the field`);
+  };
+}
+function goOut(){
+  const m = modal(`<h3>Where are you going?</h3><input id="n" placeholder="e.g. Agra – shops visit"><button class="btn green" id="ok">Go online</button>`);
+  m.querySelector("#ok").onclick = () => {
+    const note = m.querySelector("#n").value.trim() || "Field visit";
+    setDoc(doc(db, "status", me.staffId), { companyId: me.companyId, staffId: me.staffId, name: me.name, online: true, note, since: serverTimestamp() }).catch(e => toast(e.message));
+    act("out", `${me.name} went out: ${note}`); m.remove();
+  };
+}
+function visitModal(){
+  const now = new Date(), custs = [...new Set(D.visits.map(v => v.customer).filter(Boolean))];
+  const m = modal(`<h3>Add visit</h3>
+  <label>Place *</label><input id="pl" placeholder="e.g. Agra, Sadar Bazaar">
+  <div style="display:flex;gap:10px"><div style="flex:1"><label>Date</label><input id="d" type="date" value="${ymd(now)}"></div><div style="flex:1"><label>Time</label><input id="t" type="time" value="${now.toTimeString().slice(0, 5)}"></div></div>
+  <label>Customer name</label><input id="c" list="cl" placeholder="Customer / shop name"><datalist id="cl">${custs.map(c => `<option value="${esc(c)}">`).join("")}</datalist>
+  <label>What happened in the meeting</label><textarea id="mt"></textarea>
+  <label>Customer experience / review</label><textarea id="ex"></textarea>
+  <label>Customer rating</label><select id="rt"><option value="5">★★★★★</option><option value="4">★★★★</option><option value="3">★★★</option><option value="2">★★</option><option value="1">★</option><option value="0">No rating</option></select>
+  <label>Product sold</label><input id="pd" placeholder="e.g. Wall mirror 4x3">
+  <label>Order amount (₹)</label><input id="am" type="number" inputmode="numeric" placeholder="0">
+  <label>Travel expense (₹)</label><input id="xp" type="number" inputmode="numeric" placeholder="0">
+  <label>Follow-up date</label><input id="fu" type="date">
+  <label>Photo (shop / order proof)</label><input id="ph" type="file" accept="image/*">
+  <div class="err" id="er"></div><button class="btn" id="ok">Save visit</button>`);
+  const q = s => m.querySelector(s);
+  q("#ok").onclick = async () => {
+    const place = q("#pl").value.trim(); if (!place) { q("#er").textContent = "Enter place"; return; }
+    q("#ok").textContent = "Saving...";
+    const amount = +q("#am").value || 0, photo = q("#ph").files[0] ? await shrink(q("#ph").files[0]) : "";
+    const before = prog(me.staffId, D.myTarget)?.sold || 0, date = q("#d").value, t = D.myTarget;
+    addDoc(collection(db, "visits"), { companyId: me.companyId, staffId: me.staffId, staffName: me.name, place, date, time: q("#t").value, customer: q("#c").value.trim(), meeting: q("#mt").value.trim(), experience: q("#ex").value.trim(), rating: +q("#rt").value, product: q("#pd").value.trim(), amount, expense: +q("#xp").value || 0, followUp: q("#fu").value, photo, createdAt: serverTimestamp() }).catch(e => toast(e.message));
+    act("visit", `${me.name} visited ${place}${amount ? " · " + money(amount) : ""}`);
+    if (t && amount && date >= t.start && date <= t.end) [50, 80, 100].forEach(x => { if (before < t.amount * x / 100 && before + amount >= t.amount * x / 100) act("target", `${me.name} reached ${x}% of target`); });
+    m.remove(); toast("Visit saved");
+  };
+}
+</script>
+</body>
+</html>
